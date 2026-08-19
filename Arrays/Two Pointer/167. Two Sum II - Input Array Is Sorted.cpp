@@ -29,51 +29,36 @@ class Solution {
         };
 };
 
-/* https://www.geeksforgeeks.org/problems/pair-with-given-sum-in-a-sorted-array4940/1 → 3 solutions */
+/* https://www.geeksforgeeks.org/problems/pair-with-given-sum-in-a-sorted-array4940/1 → sorted */
+/* https://www.geeksforgeeks.org/problems/count-pairs-with-given-sum--150253/1 → unsorted, duplicates, negative numbers*/
 class Solution {
 	public:
     	int countPairs(vector<int> &arr, int target) {
-            /* 2 pointer → only works with sorted arrays */
-    		int l = 0;
-    		int r = arr.size() - 1;
-    		int ans = 0;
-    		
-    		while (l < r) {
-    			int sum = arr[l] + arr[r];
-    			
-    			if (sum < target) {
-    				l++;
-    			} else if (sum > target) {
-    				r--;
-    			} else {
-    				if (arr[l] == arr[r]) {
-    					int n = r - l + 1;
-    					ans += n * (n - 1) / 2;
-    					break;
-    			    };
-    				/* this extra block is becuase there are duplicates */
-    				int leftCount = 1;
-    				int rightCount = 1;
-    				
-    				while (l + 1 < r && arr[l] == arr[l + 1]) {
-    					leftCount++;
-    					l++;
-    				};
-    				
-    				while (r - 1 > l && arr[r] == arr[r - 1]) {
-    					rightCount++;
-    					r--;
-    				};
-    				
-    				ans += leftCount * rightCount;
-    				
-    				l++;
-    				r--;
-    			};
-    		};
-    		
-    		return ans;
-	    };
+            unordered_map<int, int>freq_map;
+            int counter = 0;
+            
+            for(vector<int>::iterator it = arr.begin(); it != arr.end(); it++) {
+                freq_map[*it]++; /* storing the frequency of all the numbers to find the frequency of second value for each value in array */
+            };
+            
+            for(vector<int>::iterator it = arr.begin(); it != arr.end(); it++) {
+                int rem = target - (*it); /* finding second value */
+                counter += freq_map[rem]; /* finding all the combinations that will create from the current number */
+                
+                if(rem == *it) {
+                    counter--; 
+                    /* 
+                        important → if you dont add this then the current element will also add into the counter 
+                            array = [1, 1, 1], target = 2
+                            for 1st element -> rem = 2 - 1 = 1, in freq_map the freq of 1 is 3, so if you directly add it into the counter that means you have also considered the pair of current number with itself.
+                    */
+                };
+                
+                freq_map[*it]--;
+            };
+            
+            return counter;
+    	};
 };
 
 class Solution {
